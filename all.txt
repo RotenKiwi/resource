@@ -1,0 +1,778 @@
+0/1 Knapsack
+def solve_knapsack():
+    wt = list(map(int, input("Enter the weights of items separated by space: ").split()))
+    val = list(map(int, input("Enter the values of items separated by space: ").split()))
+    W = int(input("Enter the capacity of the knapsack: "))
+    n = len(val)
+
+   
+    dp = [[0 for _ in range(W + 1)] for _ in range(n + 1)]
+
+    
+    for i in range(1, n + 1):
+        for w in range(W + 1):
+            if wt[i - 1] <= w:
+                
+                a = val[i - 1] + dp[i - 1][w - wt[i - 1]]
+                
+                dp[i][w] = max(a, dp[i - 1][w])
+                
+            else:
+                dp[i][w] = dp[i - 1][w]
+
+    print("Total value is:", dp[n][W])
+
+if __name__ == "__main__":
+    solve_knapsack()
+
+
+fractional Knapsack
+import time
+
+def fractional_knapsack():
+    
+    weights = list(map(int, input("Enter the weights of items separated by space: ").split()))
+    values = list(map(int, input("Enter the values of items separated by space: ").split()))
+    capacity = int(input("Enter the capacity of the knapsack: "))
+    
+    res = 0
+    
+    start = time.time()
+   
+    items = sorted(zip(weights, values), key=lambda x: x[1] / x[0], reverse=True)
+
+    for pair in items:
+        if capacity <= 0:  
+            break
+        if pair[0] > capacity:  
+            res += int(capacity * (pair[1] / pair[0]))  
+            capacity = 0
+        elif pair[0] <= capacity:  
+            res += pair[1]
+            capacity -= pair[0]
+            
+    end = time.time()
+    print("Maximum value in the knapsack:", res)
+    print("Time required is: ", end-start)
+
+if __name__ == "__main__":
+    fractional_knapsack()
+
+
+
+
+QuickSort Deterministic
+
+def partition(L,start,end): 
+    anchor=L[end]
+    i=start-1
+    for j in range(start,end): 
+        if L[j]<=anchor:
+            i+=1
+            L[i],L[j]=L[j],L[i]
+    L[i+1],L[end]=L[end],L[i+1]
+    return(i+1)
+
+def quicksort(L,start,end):
+    if start<end:
+        mid=partition(L,start,end)
+        quicksort(L,start,mid-1)
+        quicksort(L,mid+1,end)
+    return L
+
+
+l=list(map(int, input("Enter the array: ").split()))
+start=0
+end=len(l)-1
+m = quicksort(l,start,end)
+print(m)
+
+
+
+
+QuickSort Random
+from random import randint
+
+def quicksort(alist, start, end):
+	'''This function calls the partition and then recurse itself using the index returned by partition'''
+	if start < end:
+		pIndex = partition(alist, start, end)
+		quicksort(alist, start, pIndex-1)
+		quicksort(alist, pIndex+1, end)
+	
+	return alist
+
+def partition(alist, start, end):
+	'''This function will devide the list in two halves wrt pivot'''
+	'''This will return the index of pivot after deviding'''
+	pivot = randint(start, end)
+	temp = alist[end]
+	alist[end] = alist[pivot]
+	alist[pivot] = temp
+	pIndex = start
+	
+	for i in range(start, end):
+		if alist[i] <= alist[end]:
+			temp = alist[i]
+			alist[i] = alist[pIndex]
+			alist[pIndex] = temp
+			pIndex += 1
+	temp1 = alist[end]
+	alist[end] = alist[pIndex]
+	alist[pIndex] = temp1
+	
+	return pIndex
+	
+	
+if __name__ == '__main__':
+	list = list(map(int, input("Enter the array: ").split()))
+
+	print("Sorted array is: ",quicksort(list, 0, len(list)-1))
+	
+	
+
+
+
+NQueens
+def nQueens(n, user_placed_col):
+    col = set()
+    posDiag = set()
+    negDiag = set()
+
+    board = [["0"] * n for i in range(n)]
+
+    res = []
+
+    def backtrack(r):
+        if r == n:
+            copy = [" ".join(row) for row in board]
+            res.append(copy)
+            return
+
+        for c in range(n):
+            if c in col or (r + c) in posDiag or (r - c) in negDiag:
+                continue
+
+            col.add(c)
+            posDiag.add(r + c)
+            negDiag.add(r - c)
+            board[r][c] = "1"
+
+            backtrack(r + 1)
+
+            col.remove(c)
+            posDiag.remove(r + c)
+            negDiag.remove(r - c)
+            board[r][c] = "0"
+
+    col.add(user_placed_col)
+    posDiag.add(0 + user_placed_col)
+    negDiag.add(0 - user_placed_col)
+    board[0][user_placed_col] = "1"
+
+    backtrack(1)
+
+    if not res:
+        print("No solution found.")
+    else:
+        for sol in res:
+            for row in sol:
+                print(row)
+            print()
+            
+            
+n = int(input("Enter number of queens: "))
+column = int(input("Where would you like to put 1st queen (column): "))
+
+nQueens(n,column)
+
+
+Huffman
+#include<bits/stdc++.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+#include <chrono>
+
+using namespace std;
+
+// Define a structure for a Huffman tree node
+struct HuffmanNode {
+    char data;
+    int frequency;
+    HuffmanNode* left;
+    HuffmanNode* right;
+};
+
+// Define a custom comparator for priority queue
+struct CompareNodes {
+    bool operator()(HuffmanNode* left, HuffmanNode* right) {
+        return left->frequency > right->frequency;
+    }
+};
+
+// Function to build the Huffman tree
+HuffmanNode* buildHuffmanTree(unordered_map<char, int>& frequencies) {
+    priority_queue<HuffmanNode*, vector<HuffmanNode*>, CompareNodes> minHeap;
+
+    for (auto& entry : frequencies) {
+        HuffmanNode* node = new HuffmanNode;
+        node->data = entry.first;
+        node->frequency = entry.second;
+        node->left = nullptr;
+        node->right = nullptr;
+        minHeap.push(node);
+    }
+
+    while (minHeap.size() > 1) {
+        HuffmanNode* left = minHeap.top();
+        minHeap.pop();
+        HuffmanNode* right = minHeap.top();
+        minHeap.pop();
+
+        HuffmanNode* mergedNode = new HuffmanNode;
+        mergedNode->data = '\0'; // Internal node, not a character
+        mergedNode->frequency = left->frequency + right->frequency;
+        mergedNode->left = left;
+        mergedNode->right = right;
+
+        minHeap.push(mergedNode);
+    }
+
+    return minHeap.top();
+}
+
+// Function to generate Huffman codes and store them in a map
+void generateHuffmanCodes(HuffmanNode* root, string code, unordered_map<char, string>& huffmanCodes) {
+    if (root == nullptr) {
+        return;
+    }
+
+    if (root->data != '\0') {
+        huffmanCodes[root->data] = code;
+    }
+
+    generateHuffmanCodes(root->left, code + "0", huffmanCodes);
+    generateHuffmanCodes(root->right, code + "1", huffmanCodes);
+}
+
+// Function to encode a message using Huffman codes
+string encodeMessage(const string& message, const unordered_map<char, string>& huffmanCodes) {
+    string encodedMessage;
+    for (char c : message) {
+        encodedMessage += huffmanCodes.at(c);
+    }
+    return encodedMessage;
+}
+
+// Function to decode a message using a Huffman tree
+string decodeMessage(const string& encodedMessage, HuffmanNode* root) {
+    string decodedMessage;
+    HuffmanNode* current = root;
+    for (char bit : encodedMessage) {
+        if (bit == '0') {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+        if (current->data != '\0') {
+            decodedMessage += current->data;
+            current = root;
+        }
+    }
+    return decodedMessage;
+}
+
+int main() {
+    string filename;
+    cout << "Enter the name of the file to encode and decode: ";
+    cin >> filename;
+
+    ifstream inputFile(filename);
+    if (!inputFile) {
+        cerr << "Error: File not found." << endl;
+        return 1;
+    }
+//file size
+    inputFile.seekg(0,ios::end);
+    streampos fileSize = inputFile.tellg();
+    inputFile.seekg(0, ios::beg);
+
+    string message;
+    char ch;
+    while (inputFile.get(ch)) {
+        message += ch;
+    }
+    inputFile.close();
+if (fileSize < 0) {
+        cerr << "Error: Unable to determine file size." << endl;
+        return 1;
+    }
+
+    cout << "File size: " << fileSize << endl;
+
+    // Step 1: Count symbol frequencies
+    unordered_map<char, int> frequencies;
+    for (char c : message) {
+        frequencies[c]++;
+    }
+
+    // Step 2: Build the Huffman tree
+    HuffmanNode* root = buildHuffmanTree(frequencies);
+
+    // Step 3: Generate Huffman codes
+    unordered_map<char, string> huffmanCodes;
+    generateHuffmanCodes(root, "", huffmanCodes);
+auto start1 = chrono::high_resolution_clock::now();
+    // Step 4: Encode the message
+    string encodedMessage = encodeMessage(message, huffmanCodes);
+
+    // Step 5: Output the encoded message
+    cout << "Encoded Message: " << encodedMessage << endl;
+auto end1 = chrono::high_resolution_clock::now();
+double time1= chrono::duration_cast<chrono::nanoseconds>(end1 - start1).count();
+time1*=1e-9;
+    //cout << endl << "\nElapsed time to encode: " << chrono::duration_cast<chrono::milliseconds>(end1 - start1).count() <<" milliseconds"<<endl<<endl;
+cout <<"\nElapsed time to encode: " <<fixed<<time1<<setprecision(9);
+cout<<"sec"<<endl;
+auto start2 = chrono::steady_clock::now();
+    // Step 6: Decode the encoded message
+    string decodedMessage = decodeMessage(encodedMessage, root);
+
+    // Step 7: Output the decoded message
+    cout << "Decoded Message: " << decodedMessage << endl;
+auto end2 = chrono::steady_clock::now();
+    cout << endl << "\nElapsed time to decode: " << chrono::duration_cast<chrono::milliseconds>(end2 - start2).count() <<" milliseconds"<<endl<<endl;
+    
+    return 0;
+}
+
+
+
+Uber
+#import libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = pd.read_csv("uber.csv")
+
+df = data.copy()
+
+df.head(5)
+
+df.info()
+
+df.describe()
+
+df.isnull().sum()
+
+df.corr()
+
+df.dropna(inplace=True)
+
+plt.boxplot(df['fare_amount'])
+
+#Check the missing values now
+df.isnull().sum()
+
+import calendar
+#df['day']=df['pickup_datetime'].apply(lambda x:x.day)
+#df['hour']=df['pickup_datetime'].apply(lambda x:x.hour)
+#df['weekday']=df['pickup_datetime'].apply(lambda x:calendar.day_name[x.weekday()])
+#df['month']=df['pickup_datetime'].apply(lambda x:x.month)
+#df['year']=df['pickup_datetime'].apply(lambda x:x.year)
+#df.weekday = df.weekday.map({'Sunday':0,'Monday':1,'Tuesday':2,'Wednesday':3,'Thursday':4,'Friday':5,'Saturday':6})
+#df=df[df['passenger_count']<=8]
+from sklearn.model_selection import train_test_split
+
+#Take x as predictor variable
+df.drop(["key","pickup_datetime", "Unnamed: 0",], axis=1, inplace=True)
+x = df.drop("fare_amount", axis = 1)
+#And y as target variable
+y = df['fare_amount']
+
+#x['pickup_datetime'] = pd.to_numeric(pd.to_datetime(x['pickup_datetime']))
+#x = x.loc[:, x.columns.str.contains('key')]
+print(x)
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 0)
+print(x_test.iloc[0])
+
+from sklearn.linear_model import LinearRegression
+lrmodel = LinearRegression()
+lrmodel.fit(x_train, y_train)
+
+#Prediction
+predict = lrmodel.predict(x_test)
+pr = [-74.007204,40.728709,-73.947355,40.778531,1]
+pr_2d = np.array(pr).reshape(1, -1)
+print(lrmodel.predict(pr_2d))
+
+#Check Error
+from sklearn.metrics import mean_squared_error, r2_score
+lrmodelrmse = np.sqrt(mean_squared_error(predict, y_test))
+r2Score = r2_score(y_test, predict)
+print("RMSE error for the model is ", lrmodelrmse)
+print("R2 score is: ", r2Score)
+
+from sklearn.ensemble import RandomForestRegressor
+rfrmodel = RandomForestRegressor(n_estimators = 100, random_state = 10)
+
+#Fit the Forest
+rfrmodel.fit(x_train, y_train)
+
+rfrmodel_pred = rfrmodel.predict(x_test)
+print(rfrmodel_pred)
+
+#Errors for the forest
+rfrmodel_rmse = np.sqrt(mean_squared_error(rfrmodel_pred, y_test))
+r2Score = r2_score(y_test, rfrmodel_pred)
+print("RMSE value for Random Forest is:",rfrmodel_rmse)
+print("R2 score is: ", r2Score)
+
+test = []
+pickup_long = float(input("Enter pickup longitude: "))
+pickup_lat = float(input("Enter pickup latitude: "))
+dropoff_long = float(input("Enter dropoff longitude: "))
+dropoff_lat = float(input("Enter dropoff latitude: "))
+count = int(input("Enter passenger count: "))
+test.append(pickup_long)
+test.append(pickup_lat)
+test.append(dropoff_long)
+test.append(dropoff_lat)
+test.append(count)
+
+predict = np.array(test).reshape(1,-1)
+
+rf = rfrmodel.predict(predict)
+lr = lrmodel.predict(predict)
+
+print("Fare amount predicted using Linear Model: ", lr)
+print("Fare amount predicted using Random Forest: ", rf)
+
+
+
+Email Spam
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+from sklearn.neighbors import KNeighborsClassifier
+
+df = pd.read_csv("emails.csv")
+
+df.head(10)
+
+df.isnull().sum()
+
+df.dropna(inplace=True)
+
+df.isnull().sum()
+
+X = df.iloc[:,1:3001]
+X
+
+Y = df.iloc[:,-1].values
+Y
+
+train_x,test_x,train_y,test_y = train_test_split(X,Y,test_size = 0.3)
+
+svc = SVC(C=1.0,kernel='rbf',gamma='auto')
+svc.fit(train_x,train_y)
+y_pred2 = svc.predict(test_x)
+print("Accuracy Score for SVC : ", accuracy_score(y_pred2,test_y))
+
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.3, random_state=0)
+
+knn = KNeighborsClassifier(n_neighbors=4)
+
+knn.fit(X_train.values, y_train)
+
+print(knn.predict([X_test.loc[45]]))
+print(X_test.loc[45])
+
+print(knn.score(X_test.values, y_test))
+
+
+
+NueralNetwork Bank
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+sns.set()
+
+dataset = pd.read_csv('Churn_Modelling.csv', index_col = 'RowNumber')
+dataset.head()
+
+#Customer ID and Surname would not be relevant as features
+print(dataset['Geography'])
+
+X = dataset.drop(["CustomerId", "Surname", "Exited"], axis = 1)
+Y = dataset['Exited']
+print(X)
+
+#We need to encode categorical variables such as geography and gender
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+X.Geography = LabelEncoder().fit_transform(X.Geography)
+X.Gender = LabelEncoder().fit_transform(X.Gender)
+
+
+print(X)
+
+#Standardize the features
+X = StandardScaler().fit_transform(X)
+print(X)
+
+#Spilt the data
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2, random_state = 0)
+
+#Let us create the Neural Network
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+
+#Initialize ANN
+classifier = Sequential()
+
+#Add input layer and hidden layer
+classifier.add(Dense(6, activation = 'relu', input_shape = (X_train.shape[1], )))
+classifier.add(Dropout(rate = 0.1))
+
+#Add second layer
+classifier.add(Dense(6, activation = 'relu'))
+classifier.add(Dropout(rate = 0.1))
+
+#Add output layer
+classifier.add(Dense(1, activation = 'sigmoid'))
+
+#Let us take a look at our network
+classifier.summary()
+
+#Optimize the weights
+classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+#Fitting the Neural Network
+history = classifier.fit(X_train, y_train, batch_size = 32, epochs = 100, validation_split = 0.1, verbose = 2)
+
+y_pred = classifier.predict(X_test)
+print(y_pred)
+print(X_test)
+
+#Let us use confusion matrix with cutoff value as 0.5
+y_pred = (y_pred > 0.5).astype(int)
+print(y_pred)
+
+#Making the Matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+print(cm)
+
+#Accuracy of our NN
+print(((cm[0][0] + cm[1][1])* 100) / len(y_test), '% of data was classified correctly')
+
+dataset.head()
+
+CScore = int(input("Enter number of CScore: "))
+Geog = input("Geog: ")
+FinalGeog = 0 if Geog=="France" else 1 if Geog=="Germany" else 2
+Gender = input("Gender: ")
+FinalGender = 0 if Gender=="Female" else 1
+Age = int(input("Age: "))
+Tenure = int(input("Tenure: "))
+Balance = float(input("Balance: "))
+NumPro = float(input("NumPro: "))
+HasCr = int(input("HasCr: "))
+IsActive = int(input("IsActive: "))
+EstSalary = int(input("EstSalary: "))
+1
+
+inputs =[ CScore, FinalGeog, FinalGender, Age, Tenure, Balance, NumPro, HasCr, IsActive, EstSalary]
+someList = np.array(inputs).reshape(1,-1)
+
+someList = StandardScaler().fit_transform(someList)
+
+print(someList)
+
+print(classifier.predict(someList))
+
+
+
+Diabetes
+import numpy as np
+import pandas as pd
+
+data = pd.read_csv("diabetes.csv")
+data.head()
+
+data.isnull().sum()
+
+for column in data.columns[1:-3]:
+    data[column].replace(0, np.NaN, inplace = True)
+    data[column].fillna(round(data[column].mean(skipna=True)), inplace = True)
+data.head(10)
+
+X = data.iloc[:, :8] #Features
+Y = data.iloc[:, 8:] #Predictor
+
+#Perform Spliting
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
+
+#KNN
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier()
+knn_fit = knn.fit(X_train, Y_train.values.ravel())
+knn_pred = knn_fit.predict(X_test)
+print(knn_pred)
+
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, accuracy_score, mean_squared_error
+print("Confusion Matrix")
+print(confusion_matrix(Y_test, knn_pred))
+print("Accuracy Score:", accuracy_score(Y_test, knn_pred))
+print("Reacal Score:", recall_score(Y_test, knn_pred))
+print("F1 Score:", f1_score(Y_test, knn_pred))
+print("Precision Score:",precision_score(Y_test, knn_pred))
+
+import matplotlib.pyplot as plt
+from sklearn import metrics
+confusion_matrix = metrics.confusion_matrix(Y_test, knn_pred)
+
+cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix, display_labels = [False, True])
+
+cm_display.plot()
+plt.show()
+
+data.head()
+
+preg = int(input("Enter number of pregnancies: "))
+Gluc = int(input("Glucose: "))
+BloodP = int(input("BloodPressure: "))
+SkinThick = int(input("Skin Thick: "))
+Insulin = int(input("Insulin: "))
+Pedig = float(input("Pedigree: "))
+bmi = float(input("BMI: "))
+Age = int(input("Age: "))
+
+inputs = [preg, Gluc, BloodP, SkinThick, Insulin, bmi, Pedig, Age]
+
+someList = np.array(inputs).reshape(1,-1)
+print(knn_fit.predict(someList))
+
+
+KMeans Cluster
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv('sales_data_sample.csv', encoding='unicode_escape')
+
+df.head
+
+df.info
+
+#Columns to Remove
+to_drop = ['ADDRESSLINE1', 'ADDRESSLINE2', 'STATE', 'POSTALCODE', 'PHONE']
+df = df.drop(to_drop, axis=1)
+
+#Check for null values
+df.isnull().sum()
+
+df.dtypes
+
+#ORDERDATE Should be in date time
+df['ORDERDATE'] = pd.to_datetime(df['ORDERDATE'])
+
+#We need to create some features in order to create cluseters
+#Recency: Number of days between customer's latest order and today's date
+#Frequency : Number of purchases by the customers
+#MonetaryValue : Revenue generated by the customers
+import datetime as dt
+snapshot_date = df['ORDERDATE'].max() + dt.timedelta(days = 1)
+df_RFM = df.groupby(['CUSTOMERNAME']).agg({
+    'ORDERDATE' : lambda x : (snapshot_date - x.max()).days,
+    'ORDERNUMBER' : 'count',
+    'SALES' : 'sum'
+})
+
+#Rename the columns
+df_RFM.rename(columns = {
+    'ORDERDATE' : 'Recency',
+    'ORDERNUMBER' : 'Frequency',
+    'SALES' : 'MonetaryValue'
+}, inplace=True)
+
+df_RFM.head()
+
+# Divide into segments
+# We create 4 quartile ranges
+df_RFM['M'] = pd.qcut(df_RFM['MonetaryValue'], q = 4, labels = range(1,5))
+df_RFM['R'] = pd.qcut(df_RFM['Recency'], q = 4, labels = list(range(4,0,-1)))
+df_RFM['F'] = pd.qcut(df_RFM['Frequency'], q = 4, labels = range(1,5))
+
+df_RFM.head()
+
+#Create another column for RFM score
+df_RFM['RFM_Score'] = df_RFM[['R', 'M', 'F']].sum(axis=1)
+df_RFM.head()
+
+def rfm_level(df):
+    if bool(df['RFM_Score'] >= 10):
+        return 'High Value Customer'
+
+    elif bool(df['RFM_Score'] < 10) and bool(df['RFM_Score'] >= 6):
+        return 'Mid Value Customer'
+    else:
+        return 'Low Value Customer'
+df_RFM['RFM_Level'] = df_RFM.apply(rfm_level, axis = 1)
+df_RFM.head()
+
+# Time to perform KMeans
+data = df_RFM[['Recency', 'Frequency', 'MonetaryValue']]
+data.head()
+
+# Our data is skewed we must remove it by performing log transformation
+data_log = np.log(data)
+data_log.head()
+
+#Standardization
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(data_log)
+data_normalized = scaler.transform(data_log)
+data_normalized = pd.DataFrame(data_normalized, index = data_log.index, columns=data_log.columns)
+data_normalized.describe().round(2)
+
+#Fit KMeans and use elbow method to choose the number of clustersp
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+
+sse = {}
+
+for k in range(1, 21):
+    kmeans = KMeans(n_clusters = k, random_state = 1)
+    kmeans.fit(data_normalized)
+    sse[k] = kmeans.inertia_
+
+plt.figure(figsize=(10,6))
+plt.title('The Elbow Method')
+
+plt.xlabel('K')
+plt.ylabel('SSE')
+plt.style.use('ggplot')
+
+sns.pointplot(x=list(sse.keys()), y = list(sse.values()))
+plt.text(4.5, 60, "Largest Angle", bbox = dict(facecolor = 'lightgreen', alpha = 0.5))
+plt.show()
+
+# 5 number of clusters seems good
+kmeans = KMeans(n_clusters=5, random_state=1)
+kmeans.fit(data_normalized)
+cluster_labels = kmeans.labels_
+
+data_rfm = data.assign(Cluster = cluster_labels)
+data_rfm.head()
